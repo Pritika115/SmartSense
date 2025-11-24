@@ -1,54 +1,66 @@
 /*
  * SmartSense - Check-In 2
- * TEAM MEMBER: Jeremiah
- * Arduino Uno + LED Control
+ * Team: SmartSense
+ * Hardware: Arduino Uno + DHT22 + LED
  *
- * This sketch communicates with the Python REST API.
- * It responds in valid JSON format that Python can parse directly.
- * Features: Controls LED via serial commands and provides system/LED status.
+ * Integrated DHT22 sensor for temperature/humidity monitoring
  */
 
+#include <DHT.h>
+
+#define DHTPIN 2
+#define DHTTYPE DHT22
 #define LED_PIN 7
 
-//  SETUP
+DHT dht(DHTPIN, DHTTYPE);
+
 void setup() {
   Serial.begin(9600);
+  dht.begin();
   pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
 
-  // Send startup JSON (no DHT sensor required)
-  Serial.println("{\"system\":\"started\"}");
+  Serial.println("SmartSense System Started");
+  Serial.println("Ready for commands");
 }
 
-// MAIN LOOP
 void loop() {
   if (Serial.available()) {
     String command = Serial.readStringUntil('\n');
     command.trim();
 
-    // LED ON
     if (command == "LED:ON") {
       digitalWrite(LED_PIN, HIGH);
-      Serial.println("{\"status\":\"success\",\"led\":\"ON\"}");
+      Serial.println("RESPONSE:{\"status\":\"success\",\"action\":\"LED_ON\",\"device\":\"arduino_uno\"}");
     }
-
-    // LED OFF
     else if (command == "LED:OFF") {
       digitalWrite(LED_PIN, LOW);
-      Serial.println("{\"status\":\"success\",\"led\":\"OFF\"}");
+      Serial.println("RESPONSE:{\"status\":\"success\",\"action\":\"LED_OFF\",\"device\":\"arduino_uno\"}");
     }
-
-    //  SYSTEM STATUS
     else if (command == "STATUS") {
       int ledState = digitalRead(LED_PIN);
-
-      Serial.print("{\"status\":\"success\",\"led_state\":\"");
+      Serial.print("RESPONSE:{\"status\":\"success\",\"led_state\":\"");
       Serial.print(ledState == HIGH ? "ON" : "OFF");
       Serial.println("\"}");
     }
+    else if (command == "TEMP") {
+      float h = dht.readHumidity();
+      float t = dht.readTemperature();
 
-    // UNKNOWN COMMAND
+      if (!isnan(h) && !isnan(t)) {
+        Serial.print("TELEMETRY:{\"type\":\"temperature\",\"device\":\"arduino_uno\",\"temperature\":");
+        Serial.print(t, 1);
+        Serial.print(",\"humidity\":");
+        Serial.print(h, 1);
+        Serial.print(",\"unit\":\"C\",\"timestamp\":");
+        Serial.print(millis());
+        Serial.println("}");
+      } else {
+        Serial.println("ERROR:Failed to read from DHT sensor");
+      }
+    }
     else {
-      Serial.println("{\"status\":\"error\",\"message\":\"Unknown command\"}");
+      Serial.println("RESPONSE:{\"status\":\"error\",\"message\":\"Unknown command\"}");
     }
   }
 }
