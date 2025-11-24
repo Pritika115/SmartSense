@@ -102,13 +102,12 @@ void loop() {
 
 ---
 ### Flask REST API Running
-![Flask Server Running](screenshots/flask_running.png)
-
+![Flask Server Running](flask_running.png)
 ### /api/health
 Used to confirm that the Flask server is running correctly.
 **Example Response:**
 {"status": "ok"}
-![API Health](screenshots/api_health.png)
+![API Health](api_health.png)
 
 ### /api/status
 Requests data from the Arduino.
@@ -131,9 +130,8 @@ The server sends a serial command to switch the LED on or off.
 
 Example Response:{"status": "success", "led_state": "ON"}
  LED ON (/api/led/on)
-![LED ON](screenshots/Led_on.png)
+![LED ON](Led_on.png)
 LED OFF (/api/led/off)
-![LED OFF](screenshots/Led_off.png)
-
+![LED OFF](Led_off.png)
 ### Successful Arduino Upload
-![Arduino Upload](screenshots/arduino_upload.png)
+![Arduino Upload](arduino_upload.png)
