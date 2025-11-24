@@ -1,94 +1,54 @@
 /*
  * SmartSense - Check-In 2
- * Team: SmartSense
- * Hardware: Arduino Uno + DHT22 + LED
+ * TEAM MEMBER: Jeremiah
+ * Arduino Uno + LED Control
  *
- * Automatic MQTT-style telemetry streaming
+ * This sketch communicates with the Python REST API.
+ * It responds in valid JSON format that Python can parse directly.
+ * Features: Controls LED via serial commands and provides system/LED status.
  */
 
-#include <DHT.h>
+#define LED_PIN 7
 
-#define DHTPIN 2
-#define DHTTYPE DHT22
-#define LED_PIN 13  // Changed to Pin 13 for built-in LED support
-
-DHT dht(DHTPIN, DHTTYPE);
-
-unsigned long previousMillis = 0;
-const long interval = 2000;
-
+//  SETUP
 void setup() {
   Serial.begin(9600);
-
   pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
 
-  dht.begin();
-
-  Serial.println("SmartSense System Started");
-  Serial.println("Ready for commands");
+  // Send startup JSON (no DHT sensor required)
+  Serial.println("{\"system\":\"started\"}");
 }
 
+// MAIN LOOP
 void loop() {
-  unsigned long currentMillis = millis();
+  if (Serial.available()) {
+    String command = Serial.readStringUntil('\n');
+    command.trim();
 
-  // Auto-send telemetry every 2 seconds (MQTT pattern)
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
-    readAndSendSensorData();
-  }
-
-  // Handle REST API commands
-  if (Serial.available() > 0) {
-    handleCommand();
-  }
-}
-
-void readAndSendSensorData() {
-  float humidity = dht.readHumidity();
-  float temperature = dht.readTemperature();
-
-  if (isnan(humidity) || isnan(temperature)) {
-    Serial.println("ERROR:Failed to read from DHT sensor");
-    return;
-  }
-
-  Serial.print("TELEMETRY:{\"type\":\"temperature\",\"device\":\"arduino_uno\",\"temperature\":");
-  Serial.print(temperature, 1);
-  Serial.print(",\"humidity\":");
-  Serial.print(humidity, 1);
-  Serial.print(",\"unit\":\"C\",\"timestamp\":");
-  Serial.print(millis());
-  Serial.println("}");
-}
-
-void handleCommand() {
-  String command = Serial.readStringUntil('\n');
-  command.trim();
-
-  if (command.startsWith("LED:")) {
-    String action = command.substring(4);
-    action.trim();
-
-    if (action == "ON") {
+    // LED ON
+    if (command == "LED:ON") {
       digitalWrite(LED_PIN, HIGH);
-      Serial.println("RESPONSE:{\"status\":\"success\",\"action\":\"LED_ON\",\"device\":\"arduino_uno\"}");
+      Serial.println("{\"status\":\"success\",\"led\":\"ON\"}");
     }
-    else if (action == "OFF") {
+
+    // LED OFF
+    else if (command == "LED:OFF") {
       digitalWrite(LED_PIN, LOW);
-      Serial.println("RESPONSE:{\"status\":\"success\",\"action\":\"LED_OFF\",\"device\":\"arduino_uno\"}");
+      Serial.println("{\"status\":\"success\",\"led\":\"OFF\"}");
     }
+
+    //  SYSTEM STATUS
+    else if (command == "STATUS") {
+      int ledState = digitalRead(LED_PIN);
+
+      Serial.print("{\"status\":\"success\",\"led_state\":\"");
+      Serial.print(ledState == HIGH ? "ON" : "OFF");
+      Serial.println("\"}");
+    }
+
+    // UNKNOWN COMMAND
     else {
-      Serial.println("RESPONSE:{\"status\":\"error\",\"message\":\"Invalid LED command\"}");
+      Serial.println("{\"status\":\"error\",\"message\":\"Unknown command\"}");
     }
-  }
-  else if (command == "STATUS") {
-    int ledState = digitalRead(LED_PIN);
-    Serial.print("RESPONSE:{\"status\":\"success\",\"led_state\":\"");
-    Serial.print(ledState == HIGH ? "ON" : "OFF");
-    Serial.println("\"}");
-  }
-  else {
-    Serial.println("RESPONSE:{\"status\":\"error\",\"message\":\"Unknown command\"}");
   }
 }
