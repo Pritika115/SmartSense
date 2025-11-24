@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.Python
+venv/
+env/
+
+# Arduino
+*.hex
+*.elf
+*.eep
+*.lss
+*.map
+*.sym
+*.tmp
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.bak
+~$*
+
+# Keep sensor data for demo but ignore large logs
+*.log
