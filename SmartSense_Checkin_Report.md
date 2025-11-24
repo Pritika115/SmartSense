@@ -47,8 +47,8 @@ Communication uses **9600 baud** over COM8.
   This sketch sends sensor readings and LED status back to Python
   using simple JSON messages.
 */
-#include <DHT.h>
 
+#include <DHT.h>
 #define DHTPIN 2
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
