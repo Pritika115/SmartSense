@@ -39,14 +39,14 @@ Communication uses **9600 baud** over COM8.
 ---
 
 ## 3. Arduino Code Used
-/* 
- * SmartSense - Check-In 2
- * TEAM MEMBER: Jeremiah
- * Arduino Uno + DHT22 + LED
- *
- * Clean JSON-based communication with Python.
- */
+/*
+  SmartSense – Check-In 2
+  Student: Jeremiah
+  Hardware: Arduino Uno + DHT22 + LED
 
+  This sketch sends sensor readings and LED status back to Python
+  using simple JSON messages.
+*/
 #include <DHT.h>
 
 #define DHTPIN 2
