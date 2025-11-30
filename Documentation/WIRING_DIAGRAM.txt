@@ -1,263 +1,62 @@
-================================================================================
-                    SmartSense - Wiring Diagram (Text Version)
-================================================================================
+╔════════════════════════════════════════════════════════════════╗
+║             SmartSense Wiring Diagram                          ║
+║             ESP32-WROOM-32 + DHT22 + LED                       ║
+╚════════════════════════════════════════════════════════════════╝
 
-COMPONENTS NEEDED:
-------------------
-- Arduino Uno board
-- DHT11 Temperature & Humidity Sensor
-- LED (any color: red, green, yellow, etc.)
-- 220Ω Resistor (red-red-brown color bands)
-- Breadboard
-- Jumper wires (male-to-male)
-- USB A-to-B cable
+                    ESP32 Development Board
+          ╔═════════════════════════════════════════╗
+          ║                                         ║
+          ║  [3.3V]────────────┐                   ║
+          ║                    │                   ║
+          ║  [GPIO 4]──────┐   │                   ║
+          ║                │   │                   ║
+          ║  [GPIO 18]──┐  │   │                   ║
+          ║             │  │   │                   ║
+          ║  [GND]──────┼──┼───┼──────────────┐    ║
+          ║             │  │   │              │    ║
+          ╚═════════════╪══╪═══╪══════════════╪════╝
+                        │  │   │              │
+                        │  │   │              │
+                 ┌──────┘  │   │              │
+                 │         │   │              │
+            [220Ω]         │   │              │
+          Resistor         │   │              │
+                 │         │   │              │
+                 │         │   │              │
+            ╔════╧════╗    │   │         ╔════╧════╗
+            ║   LED   ║    │   │         ║  DHT22  ║
+            ║         ║    │   │         ║         ║
+            ║  (+) (-)║    │   │         ║ V D G   ║
+            ╚════╤════╝    │   │         ║ C A N   ║
+                 │         │   │         ║ C T D   ║
+                 └─────────┘   │         ╚═╤═╤═╤═══╝
+                               │           │ │ │
+                               └───────────┘ │ │
+                                             │ │
+                                 ┌───────────┘ │
+                                 │             │
+                                 └─────────────┘
 
-================================================================================
-                            ARDUINO UNO PINOUT
-================================================================================
 
-                              USB Port
-                                 ||
-        +----------------------------------------------------+
-        |  [ ][ ][ ][ ][ ][ ][ ][ ]    ARDUINO UNO           |
-        |                                                    |
-        |  DIGITAL PINS                                      |
-        |  [13][12][11][10][9][8][7][6][5][4][3][2][1][0]   |
-        |   ^LED                              ^DHT11 DATA    |
-        |                                                    |
-        |                                                    |
-        |  POWER PINS                                        |
-        |  [5V][3.3V][GND][GND][Vin]                         |
-        |   ^        ^                                       |
-        |   DHT11    DHT11                                   |
-        |   VCC      GND & LED GND                           |
-        +----------------------------------------------------+
+Pin Connections Summary:
+═══════════════════════════════════════════════════════════════
 
-================================================================================
-                         DHT11 SENSOR CONNECTIONS
-================================================================================
+DHT22 Sensor:
+  • VCC  (Power)    → ESP32 3.3V pin
+  • DATA (Signal)   → ESP32 GPIO 4
+  • GND  (Ground)   → ESP32 GND pin
 
-DHT11 Sensor (4-pin or 3-pin module):
+LED Circuit:
+  • Anode (+) longer leg  → 220Ω Resistor → ESP32 GPIO 18
+  • Cathode (-) shorter   → ESP32 GND pin
 
-Front View of DHT11:
-   ┌─────────────┐
-   │             │
-   │   DHT11     │
-   │             │
-   │  ┌───────┐  │
-   │  │ Grid  │  │
-   │  └───────┘  │
-   └─────────────┘
-    │  │  │  │
-    1  2  3  4
 
-Pin 1 (VCC)   →  Arduino 5V           (Red wire recommended)
-Pin 2 (DATA)  →  Arduino Digital Pin 2 (Yellow wire recommended)
-Pin 3 (NC)    →  Not connected
-Pin 4 (GND)   →  Arduino GND          (Black wire recommended)
+Notes:
+──────
+1. DHT22 can use 3.3V or 5V (3.3V works fine)
+2. 220Ω resistor protects LED from overcurrent
+3. LED polarity matters: Longer leg = Anode (+)
+4. All grounds must be connected together (common ground)
+5. Optional: Add 10kΩ pull-up resistor between DHT22 DATA and VCC
+   if you experience unreliable readings
 
-If using 3-pin module:
-Pin 1 (+)     →  Arduino 5V
-Pin 2 (out)   →  Arduino Digital Pin 2
-Pin 3 (−)     →  Arduino GND
-
-================================================================================
-                              LED CIRCUIT
-================================================================================
-
-LED Connection:
-
-LED has two legs:
-  LONG leg  = Anode (+) = Positive
-  SHORT leg = Cathode (−) = Negative
-
-Connection Path:
-Arduino Pin 13 → 220Ω Resistor → LED Long Leg (+)
-LED Short Leg (−) → Arduino GND
-
-Visual:
-  Pin 13 ──────[220Ω]──────[>|]────── GND
-                        Long Short
-                         leg  leg
-
-Colors:
-- LED Anode side: Use red or yellow wire
-- LED Cathode side: Use black wire
-
-================================================================================
-                        BREADBOARD LAYOUT EXAMPLE
-================================================================================
-
-Breadboard Top View (simplified):
-
-     a b c d e   f g h i j
-   ┌─────────────────────────┐
- 1 │                         │
- 2 │    DHT11                │  DHT11 sensor spans rows 2-5
- 3 │    [  ]  [  ]           │
- 4 │     │    │              │
- 5 │  ┌──┘    └──┐           │
- 6 │  │          │           │
- 7 │  │          │           │
- 8 │  │   LED    │           │  LED at row 8
- 9 │  │   [>|]   │           │
-10 │  │    │     │           │
-11 │  │   [R]    │           │  Resistor at row 11
-12 │  │    │     │           │
-   └──┼────┼─────┼───────────┘
-      │    │     │
-     GND  Pin2  5V
-
-Connections on breadboard:
-- Row 2, col c: DHT11 Pin 1 (VCC)
-- Row 3, col c: DHT11 Pin 2 (DATA)
-- Row 5, col c: DHT11 Pin 4 (GND)
-
-- Row 8, col d: LED Long leg (+)
-- Row 8, col f: LED Short leg (−)
-- Row 11, col d: One end of resistor
-- Row 11, col h: Other end of resistor
-
-Jumper wires:
-- Red wire: 5V → DHT11 VCC (row 2)
-- Yellow wire: Pin 2 → DHT11 DATA (row 3)
-- Black wire: GND → DHT11 GND (row 5)
-- Orange wire: Pin 13 → Resistor (row 11)
-- Black wire: LED cathode (row 8) → GND rail
-
-================================================================================
-                        COMPLETE CONNECTION TABLE
-================================================================================
-
-FROM                          TO                      WIRE COLOR (suggested)
-────────────────────────────────────────────────────────────────────────────
-Arduino 5V                    DHT11 VCC (Pin 1)       Red
-Arduino Digital Pin 2         DHT11 DATA (Pin 2)      Yellow
-Arduino GND                   DHT11 GND (Pin 4)       Black
-
-Arduino Digital Pin 13        220Ω Resistor           Orange/Any
-220Ω Resistor (other end)     LED Anode (Long leg)    Orange/Any
-LED Cathode (Short leg)       Arduino GND             Black
-
-Arduino USB Port              Computer USB Port       USB Cable
-
-================================================================================
-                           STEP-BY-STEP WIRING
-================================================================================
-
-Step 1: Power Off
-   - Unplug Arduino from computer
-   - Never wire while powered on
-
-Step 2: DHT11 Sensor
-   - Insert DHT11 into breadboard (rows 2-5)
-   - Connect red wire: Arduino 5V → DHT11 Pin 1 (VCC)
-   - Connect yellow wire: Arduino Pin 2 → DHT11 Pin 2 (DATA)
-   - Connect black wire: Arduino GND → DHT11 Pin 4 (GND)
-
-Step 3: LED Circuit
-   - Insert LED into breadboard
-     * Long leg in row 8, column d
-     * Short leg in row 8, column f
-   - Insert 220Ω resistor
-     * One leg in row 8, column d (same as LED long leg)
-     * Other leg in empty row
-   - Connect wire: Arduino Pin 13 → Resistor
-   - Connect black wire: LED short leg → Arduino GND
-
-Step 4: Verify Connections
-   - Check all wires are secure
-   - Verify LED polarity (long leg toward Pin 13)
-   - Verify no short circuits (5V not touching GND directly)
-   - Double-check DHT11 connections
-
-Step 5: Power On
-   - Connect Arduino to computer via USB
-   - Upload code
-   - Test system
-
-================================================================================
-                          TROUBLESHOOTING WIRING
-================================================================================
-
-Problem: DHT11 reads "Failed to read sensor"
-Fix:
-  - Check DATA wire is on Pin 2 (not Pin 3 or 4)
-  - Verify VCC connected to 5V (not 3.3V)
-  - Check GND is connected
-  - Try adding 10kΩ pull-up resistor between DATA and VCC (optional)
-
-Problem: LED doesn't light up
-Fix:
-  - Check LED polarity (long leg = positive)
-  - Verify 220Ω resistor is present
-  - Check Pin 13 connection
-  - Try different LED (might be burned out)
-  - Check GND connection
-
-Problem: Nothing works
-Fix:
-  - Verify USB cable is data cable (not just power)
-  - Check Arduino is powered (ON LED should be lit)
-  - Verify code uploaded successfully
-  - Check all connections are secure
-
-================================================================================
-                            RESISTOR COLOR CODE
-================================================================================
-
-220Ω Resistor:
-   Red - Red - Brown - Gold
-    2     2     ×10    ±5%
-
-How to read:
-  Band 1 (Red) = 2
-  Band 2 (Red) = 2
-  Band 3 (Brown) = ×10
-  Result: 22 × 10 = 220Ω
-
-Other acceptable resistors: 220Ω, 330Ω, or 470Ω
-
-================================================================================
-                         SAFETY PRECAUTIONS
-================================================================================
-
-1. Always disconnect power before wiring
-2. Double-check polarity before powering on
-3. Never connect 5V directly to GND (short circuit)
-4. LED must have resistor (or it will burn out)
-5. Use correct resistor value (220-470Ω for LED)
-6. Keep liquids away from electronics
-7. Don't force components into breadboard
-
-================================================================================
-                          FINAL CHECK BEFORE UPLOAD
-================================================================================
-
-Before uploading code, verify:
-
-☐ DHT11 VCC connected to Arduino 5V
-☐ DHT11 DATA connected to Arduino Pin 2
-☐ DHT11 GND connected to Arduino GND
-☐ LED long leg connected to resistor
-☐ Resistor connected to Arduino Pin 13
-☐ LED short leg connected to Arduino GND
-☐ No loose wires
-☐ No short circuits (5V not touching GND)
-☐ Arduino connected via USB
-
-If all checked, proceed to upload code!
-
-================================================================================
-                               NOTES
-================================================================================
-
-- This is a low-voltage circuit (5V DC) - safe to handle
-- Components can't be damaged by incorrect serial port selection
-- If something doesn't work, recheck connections first
-- Take a photo of your wiring for documentation
-- Label wires if possible for easier debugging
-
-================================================================================
-                          GOOD LUCK!
-================================================================================
