@@ -44,6 +44,14 @@ SmartSense is an affordable IoT room monitoring system that provides real-time e
 5. **IoT Learners**: Excellent educational platform for understanding MQTT, REST APIs, and embedded systems
 
 ---
+## Known Issues & Limitations
+
+- DHT22 sensor updates slowly (approx. every 2 seconds), which may cause minor delays in data display.
+- Public MQTT broker (HiveMQ) sometimes disconnects due to network congestion.
+- REST LED control may fail if the ESP32 loses Wi-Fi temporarily.
+- Python client must remain running to continuously log CSV data.
+
+
 
 ## System Architecture
 
