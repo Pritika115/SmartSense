@@ -51,6 +51,41 @@ SmartSense is an affordable IoT room monitoring system that provides real-time e
 - REST LED control may fail if the ESP32 loses Wi-Fi temporarily.
 - Python client must remain running to continuously log CSV data.
 
+## System Architecture Explanation
+
+The SmartSense IoT prototype uses a hybrid communication model combining MQTT and REST to meet different system needs:
+
+### 1. MQTT for Real-Time Sensor Streaming
+The ESP32 publishes temperature and humidity readings to:
+- `smartsense/temperature`
+- `smartsense/humidity`
+
+The Python UI subscribes to both topics and updates the interface immediately when new readings arrive. MQTT is used because it is lightweight, fast, and ideal for frequent sensor updates.
+
+### 2. REST API for Control & Status
+The ESP32 exposes REST endpoints:
+- `POST /led` → Turn LED ON/OFF  
+- `GET /status` → Retrieve full system state (temperature, humidity, LED, WiFi RSSI, IP)
+
+REST is used because it is simple, reliable, and ideal for device control and structured responses.
+
+### 3. Local Data Storage
+The Python client stores:
+- Timestamped temperature and humidity readings (`sensor_data.csv`)
+
+This allows the system to show recent history even after a restart.
+
+### 4. User Interface Flow
+1. ESP32 collects DHT22 data  
+2. ESP32 publishes MQTT messages  
+3. Python client receives MQTT data  
+4. User interacts with menu (LED ON/OFF, system status)  
+5. UI sends REST requests to ESP32  
+6. Python app logs data locally  
+
+This architecture ensures a clean separation of quick updates (MQTT) and controlled actions (REST).
+
+
 
 
 ## System Architecture
