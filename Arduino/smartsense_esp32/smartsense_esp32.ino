@@ -206,12 +206,12 @@ void handleLedPost() {
     
     if (state == "on") {
       ledState = true;
-      digitalWrite(LED_PIN, HIGH);
+      digitalWrite(LED_PIN, LOW);
       server.send(200, "application/json", "{\"led_state\":\"on\",\"message\":\"LED turned on\"}");
       Serial.println("LED turned ON via REST API");
     } else if (state == "off") {
       ledState = false;
-      digitalWrite(LED_PIN, LOW);
+      digitalWrite(LED_PIN, HIGH);
       server.send(200, "application/json", "{\"led_state\":\"off\",\"message\":\"LED turned off\"}");
       Serial.println("LED turned OFF via REST API");
     } else {
