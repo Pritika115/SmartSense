@@ -16,7 +16,7 @@ MQTT_TOPIC_TEMP = "smartsense/temperature"
 MQTT_TOPIC_HUMIDITY = "smartsense/humidity"
 
 # ESP32 REST API Configuration
-ESP32_IP = "192.168.1.XXX"  # Replace with your ESP32 IP address
+ESP32_IP = "192.168.0.62"  # Replace with your ESP32 IP address
 REST_API_BASE = f"http://{ESP32_IP}"
 
 # Storage for latest readings
